@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+    <EditText
+        android:id="@+id/view_drawable"
+        android:layout_width="45dp"
+        android:layout_height="50dp"
+        android:paddingLeft="20dp"
+        android:maxLength="12"
+        android:singleLine="true"
+        android:background="@drawable/search_background"/>
+
+    <ImageView
+        android:id="@+id/iv11"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@mipmap/search_icon"
+        android:onClick="but11"/>
+
+</RelativeLayout>

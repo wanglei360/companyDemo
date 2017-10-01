@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--TODO shape:形状 oval:椭圆形-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+       android:shape="oval"
+       android:useLevel="false">
+    <!-- TODO solid:实心，就是填充的意思！android:color指定填充的颜色-->
+    <solid android:color="@color/colorAccent"/>
+    <size
+        android:width="20dp"
+        android:height="20dp"/>
+</shape>

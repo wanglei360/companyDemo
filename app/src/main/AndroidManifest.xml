@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.facebook.rebound.playground">
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.NoTitleBar">
+        <activity
+            android:name="com.example.leiwang.myapplication.activity.MyAcrivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.example.leiwang.myapplication.activity.PlaygroundActivity"/>
+        <activity android:name="com.example.leiwang.myapplication.activity.MyNewActivity"/>
+    </application>
+
+</manifest>
