@@ -6,11 +6,18 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+
+import com.myserver.myapplication.R;
 
 /**
  * 创建者：wanglei
@@ -39,14 +46,7 @@ public class MyImageView extends View {
             myCanvas(canvas);
     }
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            invalidate();
-        }
-    };
-
-    public void er() {
+    public void startAnim() {
         bb = true;
         skewKy = 0f;
         new Thread() {
@@ -54,10 +54,16 @@ public class MyImageView extends View {
             public void run() {
                 while (bb) {
                     try {
-                        skewKy -= 0.01f;
-                        Thread.sleep(60);
-                        handler.sendEmptyMessage(0);
-                    } catch (InterruptedException e) {
+                        if (handler == null)
+                            return;
+                        else {
+                            skewKy -= 0.01f;
+                            Thread.sleep(40);
+                            handler.sendEmptyMessage(0);
+                        }
+                    } catch (Exception e) {
+                        if (handler == null)
+                            Log.e("Exception", "<<<<<<<<<<<<<<<<<<handler == null");
                         e.printStackTrace();
                     }
                 }
@@ -65,6 +71,7 @@ public class MyImageView extends View {
         }.start();
     }
 
+    private Handler handler;
     private int showViewStartY;
     private boolean isTopItem = false;
     private boolean bb;
@@ -72,33 +79,60 @@ public class MyImageView extends View {
     private Bitmap oldBitmap;
     private int width;
     private int height;
+    private int titleHeight;
     private int popupViewHeight;
     private int viewY;
     private int afterChangeWidth;
+    private int surplusHeight;
+    private double AlteredHeight;
+
+    public void onDestroy() {
+        bb = false;
+        handler.removeCallbacksAndMessages(null);
+        handler = null;
+        oldBitmap = null;
+    }
 
     /**
-     * @param bm              bitmap
-     * @param width           当前View的宽
-     * @param height          当前View的高
-     * @param popupViewHeight 当前popupView的高
-     * @param surplusHeight   popupView减去ItemView的高
+     * @param bm                 bitmap
+     * @param width              当前View的宽
+     * @param height             当前View的高
+     * @param popupViewHeight    当前popupView的高
+     * @param surplusHeight      popupWindow减去ItemView的差值
+     * @param viewY              按下去时item的Y轴起始点坐标
+     * @param bitLyaoutTopHeight 当前RecyclerView上面的高度,不加上状态栏的
      */
-    public void initInfo(Bitmap bm, int width, int height, int popupViewHeight, int surplusHeight, int viewY) {
+    public void initInfo(Bitmap bm, int width, int height, int popupViewHeight, int surplusHeight, int viewY, int bitLyaoutTopHeight) {
+        if (handler == null) {
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    invalidate();
+                }
+            };
+        }
         this.oldBitmap = bm;
         this.width = width;
         this.height = height;
         this.popupViewHeight = popupViewHeight;
         this.viewY = viewY;
+        this.titleHeight = bitLyaoutTopHeight;
+        this.surplusHeight = surplusHeight;
         afterChangeWidth = width;
         //if(viewY<差值)就用{viewY}else{正常}
-        isTopItem = viewY < surplusHeight;
+        isTopItem = viewY + bitLyaoutTopHeight < surplusHeight;
         if (isTopItem)
-            showViewStartY = viewY;
+            showViewStartY = viewY + bitLyaoutTopHeight;
         else
             showViewStartY = popupViewHeight - height;
+        AlteredHeight = height * 1.1;
+
     }
 
     private void myCanvas(Canvas canvas) {
+
+//        BitmapDrawable drawable = (BitmapDrawable) getResources().getDrawable(R.mipmap.default_icon);
+//        oldBitmap = drawable.getBitmap();
 
         Matrix matrix = new Matrix();
         matrix.setSkew(0f, skewKy);
@@ -117,14 +151,31 @@ public class MyImageView extends View {
         afterChangeWidth -= 4;
         Rect mSrcRect = new Rect(0, 0, newWidth, newHeight);//代表要绘制的bitmap 区域
         Rect mDestRect = new Rect(0, startY + showViewStartY, afterChangeWidth, endY + showViewStartY);//代表的是要将bitmap 绘制在屏幕的什么地方
-
-        Paint mPaint = new Paint();//创建画笔
-//        Bitmap bitmap = drawBg4Bitmap(0xff0000ff, matrixBitmap);
         canvas.drawBitmap(matrixBitmap, mSrcRect, mDestRect, null);
 
-        bottomTriangle(canvas, newHeight);
         rightParallelogram(canvas, newHeight, startY);
-        bb = height * 1.2 > matrixBitmap.getHeight();
+        bottomTriangle(canvas, newHeight);
+
+        int eraseHeight = 0;
+        if (viewY < 0) {
+            int i = surplusHeight + Math.abs(viewY);
+            if (i < titleHeight)
+                eraseHeight = i;
+            else {
+                eraseHeight = titleHeight;
+            }
+        } else if (viewY < AlteredHeight) {
+            eraseHeight = popupViewHeight - height - viewY;
+        }
+        eraseTop(canvas, eraseHeight);
+        bb = AlteredHeight > matrixBitmap.getHeight();
+    }
+
+    private void eraseTop(Canvas canvas, int eraseHeight) {
+        Paint mpaint = new Paint();
+        mpaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        mpaint.setARGB(0x00, 0xff, 0xff, 0xff);
+        canvas.drawRect(0, 0, width, eraseHeight, mpaint);
     }
 
     /**
@@ -135,9 +186,9 @@ public class MyImageView extends View {
         int bottomLeftY;
         int topLeftY;
         if (isTopItem) {
-            bottomRightY = viewY + height;
+            bottomRightY = viewY + height + titleHeight;
             //todo 显示的-差值(newHeight - height)
-            bottomLeftY = (viewY + height) - (newHeight - height);
+            bottomLeftY = (viewY + height) - (newHeight - height) + titleHeight;
             topLeftY = startY + showViewStartY;
         } else {
             bottomRightY = popupViewHeight;
@@ -167,9 +218,9 @@ public class MyImageView extends View {
         int bottomLeftY;
         int topRightY;
         if (isTopItem) {
-            bottomLeftY = viewY + height;
-            bottomRightY = viewY + height;
-            topRightY = (viewY + height) - (newHeight - height);
+            bottomLeftY = viewY + height + titleHeight;
+            bottomRightY = viewY + height + titleHeight;
+            topRightY = (viewY + height) - (newHeight - height) + titleHeight;
         } else {
             bottomLeftY = popupViewHeight;
             bottomRightY = popupViewHeight;
@@ -195,11 +246,12 @@ public class MyImageView extends View {
     /**
      * bitmap错切后会有黑边,七个参数的Bitmap.createBitmap会调用四个参数的Bitmap.createBitmap在调用native方法时写死的黑色
      * 去除错切后的黑边的方法
-     * @param color 黑边变成什么颜色
-     * @param orginBitmap   要去除bitmap
-     * @return  返回一个没有黑边的bitmap
+     *
+     * @param color       黑边变成什么颜色
+     * @param orginBitmap 要去除bitmap
+     * @return 返回一个没有黑边的bitmap
      */
-    public Bitmap drawBg4Bitmap(int color, Bitmap orginBitmap) {
+    private Bitmap drawBg4Bitmap(int color, Bitmap orginBitmap) {
         Paint paint = new Paint();
         paint.setColor(color);
         Bitmap bitmap = Bitmap.createBitmap(orginBitmap.getWidth(), orginBitmap.getHeight(), orginBitmap.getConfig());

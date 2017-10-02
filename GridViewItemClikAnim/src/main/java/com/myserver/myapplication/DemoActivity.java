@@ -3,13 +3,16 @@ package com.myserver.myapplication;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 
 import java.util.ArrayList;
@@ -22,11 +25,14 @@ import java.util.ArrayList;
  * <p>修改时间：
  * <p>修改备注：
  */
-public class DemoActivity extends Activity implements RvAdapter.OnItemClickListener {
+public class DemoActivity extends Activity implements RvAdapter.OnItemClickListener, PopupWindow.OnDismissListener {
 
     RecyclerView rv;
     private ArrayList<Integer> list;
     private RvAdapter rvAdapter;
+    private View title;
+    private int titleHeight;
+    private MyImageView popupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,7 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
     }
 
     private void init() {
+        title = findViewById(R.id.title);
         rv = (RecyclerView) findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(this, 3));
         rv.setHasFixedSize(true);
@@ -52,22 +59,20 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
 
     @Override
     public void onItemClick(View view, int position) {
-        Log.e("width1","width = "+view.getWidth());
-        showPopupWindow((int) view.getX(), (int) view.getY(), view);
+        titleHeight = title.getHeight();
+        showPopupWindow(view,(int) view.getX(), (int) view.getY(), view.getWidth(), view.getHeight());
         list.add(101);
         rvAdapter.notifyDataSetChanged();
     }
 
-
-    private void showPopupWindow(final int viewX, final int viewY, final View view) {
-        final int viewWidth = view.getWidth();
-        final int viewHeight = view.getHeight();
+    private void showPopupWindow(final View view, final int viewX, final int viewY, final int viewWidth, final int viewHeight) {
         final int surplusHeight = viewHeight / 3;
         final int popupViewHeight = viewHeight + surplusHeight;
-        final MyImageView popupView = (MyImageView) View.inflate(this, R.layout.popup_view, null);
+        popupView = (MyImageView) View.inflate(this, R.layout.popup_view, null);
 
         // TODO: 2016/5/17 创建PopupWindow对象，指定宽度和高度
         final PopupWindow window = new PopupWindow(popupView, viewWidth, popupViewHeight);
+        window.setOnDismissListener(this);
         // TODO: 2016/5/17 设置背景颜色
         window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
         // TODO: 2016/5/17 设置可以获取焦点
@@ -81,22 +86,26 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
             //根据资源ID获取响应的尺寸值
             statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
             final int poputWindowY;
-            int height = view.getHeight();
-            if (viewY + height < height + surplusHeight) {//
+            if (viewY + viewHeight < viewHeight + surplusHeight) {//
                 poputWindowY = viewY + statusBarHeight1 - surplusHeight;
             } else {
                 poputWindowY = viewY + statusBarHeight1 - surplusHeight;
             }
-            window.showAsDropDown(popupView, viewX, poputWindowY);
+            window.showAsDropDown(popupView, viewX, poputWindowY + titleHeight);
             popupView.post(new Runnable() {
                 @Override
                 public void run() {
                     view.setDrawingCacheEnabled(true);
-                    Bitmap bm = view.getDrawingCache();
-                    popupView.initInfo(bm, viewWidth, viewHeight, popupViewHeight, surplusHeight, viewY);
-                    popupView.er();
+                    popupView.initInfo(view.getDrawingCache(), viewWidth, viewHeight, popupViewHeight, surplusHeight, viewY, titleHeight);
+                    popupView.startAnim();
                 }
             });
         }
+    }
+
+    @Override
+    public void onDismiss() {
+        if (popupView != null)
+            popupView.onDestroy();
     }
 }

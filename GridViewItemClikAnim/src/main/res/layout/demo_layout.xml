@@ -5,6 +5,12 @@
               android:background="#FFEBCD"
               android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:background="#B22222"
+        android:layout_height="80dp"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
