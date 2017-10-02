@@ -52,6 +52,7 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
 
     @Override
     public void onItemClick(View view, int position) {
+        Log.e("width1","width = "+view.getWidth());
         showPopupWindow((int) view.getX(), (int) view.getY(), view);
         list.add(101);
         rvAdapter.notifyDataSetChanged();
@@ -59,12 +60,14 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
 
 
     private void showPopupWindow(final int viewX, final int viewY, final View view) {
-        final int surplusHeight = view.getHeight() / 3;
-        final int popupViewHeight = view.getHeight() + surplusHeight;
+        final int viewWidth = view.getWidth();
+        final int viewHeight = view.getHeight();
+        final int surplusHeight = viewHeight / 3;
+        final int popupViewHeight = viewHeight + surplusHeight;
         final MyImageView popupView = (MyImageView) View.inflate(this, R.layout.popup_view, null);
 
         // TODO: 2016/5/17 创建PopupWindow对象，指定宽度和高度
-        PopupWindow window = new PopupWindow(popupView, view.getWidth(), popupViewHeight);
+        final PopupWindow window = new PopupWindow(popupView, viewWidth, popupViewHeight);
         // TODO: 2016/5/17 设置背景颜色
         window.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
         // TODO: 2016/5/17 设置可以获取焦点
@@ -77,14 +80,20 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
         if (resourceId > 0) {
             //根据资源ID获取响应的尺寸值
             statusBarHeight1 = getResources().getDimensionPixelSize(resourceId);
-            window.showAsDropDown(popupView, viewX, viewY + statusBarHeight1 - surplusHeight);
+            final int poputWindowY;
+            int height = view.getHeight();
+            if (viewY + height < height + surplusHeight) {//
+                poputWindowY = viewY + statusBarHeight1 - surplusHeight;
+            } else {
+                poputWindowY = viewY + statusBarHeight1 - surplusHeight;
+            }
+            window.showAsDropDown(popupView, viewX, poputWindowY);
             popupView.post(new Runnable() {
                 @Override
                 public void run() {
                     view.setDrawingCacheEnabled(true);
                     Bitmap bm = view.getDrawingCache();
-
-                    popupView.initInfo(bm, view.getWidth(), view.getHeight(), popupViewHeight, surplusHeight);
+                    popupView.initInfo(bm, viewWidth, viewHeight, popupViewHeight, surplusHeight, viewY);
                     popupView.er();
                 }
             });

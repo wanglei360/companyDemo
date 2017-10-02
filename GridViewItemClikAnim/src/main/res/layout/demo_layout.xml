@@ -5,7 +5,6 @@
               android:background="#FFEBCD"
               android:orientation="vertical">
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
