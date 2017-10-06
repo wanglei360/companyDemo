@@ -1,0 +1,6 @@
+<resources>
+
+    <style name="Mc_HomeThemo" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:listDivider">@drawable/divider_bg</item>
+    </style>
+</resources>

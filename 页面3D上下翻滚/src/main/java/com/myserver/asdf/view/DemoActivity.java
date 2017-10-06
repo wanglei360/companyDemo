@@ -1,4 +1,4 @@
-package com.myserver.myapplication;
+package com.myserver.asdf.view;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -8,6 +8,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.PopupWindow;
+import android.widget.Toast;
+
+import com.myserver.asdf.R;
 
 import java.util.ArrayList;
 
@@ -21,7 +24,7 @@ import java.util.ArrayList;
  */
 public class DemoActivity extends Activity implements RvAdapter.OnItemClickListener, PopupWindow.OnDismissListener {
 
-    RecyclerView rv;
+    RecyclerView rv/*,rv1*/;
     private ArrayList<Integer> list;
     private RvAdapter rvAdapter;
     private View title;
@@ -44,18 +47,24 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
         rv = (RecyclerView) findViewById(R.id.recycler_view);
         rv.setLayoutManager(new GridLayoutManager(this, 3));
         rv.setHasFixedSize(true);
-        rvAdapter = new RvAdapter(list);
+        RvAdapter rvAdapter1 = new RvAdapter(list,0);
         rv.addItemDecoration(new DividerGridItemDecoration(this));
-        rv.setAdapter(rvAdapter);
-        rvAdapter.setOnItemClickListener(this);
+        rv.setAdapter(rvAdapter1);
+        rvAdapter1.setOnItemClickListener(this);
+
+
+//        rv1 = (RecyclerView) findViewById(R.id.recycler_view1);
+//        rv1.setLayoutManager(new GridLayoutManager(this, 3));
+//        rv1.setHasFixedSize(true);
+//        rv1.addItemDecoration(new DividerGridItemDecoration(this));
+//        RvAdapter rvAdapter = new RvAdapter(list,1);
+//        rv1.setAdapter(rvAdapter);
     }
 
     @Override
     public void onItemClick(View view, int position) {
         int titleHeight = title.getHeight();
         showPopupWindow(view,(int) view.getX(), (int) view.getY(), view.getWidth(), view.getHeight(),titleHeight);
-        list.add(101);
-        rvAdapter.notifyDataSetChanged();
     }
 
     private void showPopupWindow(final View view, final int viewX, final int viewY, final int viewWidth, final int viewHeight, final int titleHeight) {
@@ -100,5 +109,9 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
     public void onDismiss() {
         if (popupView != null)
             popupView.onDestroy();
+    }
+
+    public void viewBut(View view) {
+        Toast.makeText(this,"我是title中View",Toast.LENGTH_SHORT).show();
     }
 }

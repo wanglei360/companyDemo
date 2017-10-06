@@ -27,16 +27,16 @@ import com.myserver.myapplication.R;
  * <p>修改时间：
  * <p>修改备注：
  */
-public class MyImageView extends View {
-    public MyImageView(Context context) {
+public class RolloverView extends View {
+    public RolloverView(Context context) {
         super(context);
     }
 
-    public MyImageView(Context context, AttributeSet attrs) {
+    public RolloverView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MyImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public RolloverView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
