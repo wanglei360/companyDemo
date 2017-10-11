@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.myserver.asdf.R;
 
@@ -25,22 +24,23 @@ public class RvAdapter extends RecyclerView.Adapter {
     List<Integer> list;
     int ii;
 
-    public RvAdapter(List<Integer> list,int ii) {
+    public RvAdapter(List<Integer> list, int ii) {
         this.list = list;
         this.ii = ii;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LinearLayout view = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv, parent, false);
+        ImageView view = (ImageView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_rv, parent, false);
         return new GridViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof GridViewHolder) {
-            if (ii != 0)
+            if (ii != 0) {
                 ((GridViewHolder) holder).item_iv.setBackgroundResource(R.mipmap.delete);
+            }
             ((GridViewHolder) holder).item_iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -69,7 +69,6 @@ public class RvAdapter extends RecyclerView.Adapter {
         public GridViewHolder(View itemView) {
             super(itemView);
             item_iv = (ImageView) itemView.findViewById(R.id.item_iv);
-
         }
     }
 

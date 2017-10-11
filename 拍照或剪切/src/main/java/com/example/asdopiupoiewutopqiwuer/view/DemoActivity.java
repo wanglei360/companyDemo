@@ -39,6 +39,9 @@ public class DemoActivity extends Activity {
         photograph.photographOrPick(this);
     }
 
+    /*
+    fragment有也有这个方法,不用强制回到Activity中
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

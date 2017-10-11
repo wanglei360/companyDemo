@@ -19,38 +19,36 @@
             android:onClick="viewBut"/>
     </LinearLayout>
 
-    <com.myserver.asdf.NewHomeScrollerView
+    <com.myserver.asdf.view.NewHomeScrollerView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <!--<ScrollView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:fadingEdge="none"
+            android:overScrollMode="never">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <include layout="@layout/item_rv"/>
 
                 <include layout="@layout/item_rv"/>
-            </LinearLayout>
-        <!--</ScrollView>-->
 
-        <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/recycler_view1"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"/>-->
-        <!--<View-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:background="@mipmap/delete_stu1"/>-->
-    </com.myserver.asdf.NewHomeScrollerView>
+                <include layout="@layout/item_rv"/>
+
+                <include layout="@layout/item_rv"/>
+            </LinearLayout>
+        </ScrollView>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.myserver.asdf.view.NewHomeScrollerView>
 
 </LinearLayout>

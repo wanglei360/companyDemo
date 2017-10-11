@@ -20,7 +20,7 @@ import com.myserver.asdf.R;
 /**
  * 创建者：wanglei
  * <p>时间：17/10/1  11:26
- * <p>类描述：
+ * <p>类描述：todo item点击侧翻的自定义View
  * <p>修改人：
  * <p>修改时间：
  * <p>修改备注：

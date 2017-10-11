@@ -1,4 +1,4 @@
-package com.myserver.asdf.view;
+package com.myserver.asdf;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -6,11 +6,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.View;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import com.myserver.asdf.R;
+import com.myserver.asdf.view.DividerGridItemDecoration;
+import com.myserver.asdf.view.RolloverView;
+import com.myserver.asdf.view.RvAdapter;
 
 import java.util.ArrayList;
 
@@ -34,12 +37,19 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.demo_layout);
-
         list = new ArrayList<>();
         for (int x = 0; x < 100; x++) {
             list.add(x);
         }
         init();
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        Display dd = getWindowManager().getDefaultDisplay();
+        int height = dd.getHeight();
+        int dheight = dd.getHeight();
     }
 
     private void init() {
@@ -52,13 +62,6 @@ public class DemoActivity extends Activity implements RvAdapter.OnItemClickListe
         rv.setAdapter(rvAdapter1);
         rvAdapter1.setOnItemClickListener(this);
 
-
-//        rv1 = (RecyclerView) findViewById(R.id.recycler_view1);
-//        rv1.setLayoutManager(new GridLayoutManager(this, 3));
-//        rv1.setHasFixedSize(true);
-//        rv1.addItemDecoration(new DividerGridItemDecoration(this));
-//        RvAdapter rvAdapter = new RvAdapter(list,1);
-//        rv1.setAdapter(rvAdapter);
     }
 
     @Override

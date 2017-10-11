@@ -1,4 +1,4 @@
-package com.myserver.asdf;
+package com.myserver.asdf.view;
 
 import android.content.Context;
 import android.os.Handler;
@@ -9,7 +9,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 
 /**
  * 创建者：leiwang
@@ -28,16 +30,16 @@ import android.widget.RelativeLayout;
  */
 public class NewHomeScrollerView extends RelativeLayout {
 
-    private View view2;
+    private ScrollView view2;
     private RecyclerView rv;
     private GridLayoutManager glm;
     private int layoutHeight;
-    private int distance = 50;
-    private boolean isDownRoll;
+    private final int distance = 100;
     private boolean isRollDoing;
     private boolean isIntercept;
-    private boolean isHome;
+    private boolean isHome;//true就是home页,否则反之
     private int mDownY;
+    private View topView;
 
     public NewHomeScrollerView(Context context) {
         super(context);
@@ -54,13 +56,44 @@ public class NewHomeScrollerView extends RelativeLayout {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
+        isHome = true;
+        isRollDoing = true;
         layoutHeight = getHeight();
-        rv = (RecyclerView) getChildAt(0);
-        view2 = getChildAt(1);
+        rv = (RecyclerView) getChildAt(1);
+        view2 = (ScrollView) getChildAt(0);
+        myGetView(view2);
         glm = (GridLayoutManager) rv.getLayoutManager();
-
         view2.setRotationX(90);
         view2.setY(-layoutHeight);
+//        view2.setPivotY(view2.getHeight());
+//        Log.d("changeViewYAndDegrees", "setY = " + (-layoutHeight) + " 角度 = " + 90 + "  pivotY = " + pivotY);
+
+//        view2.setFocusableInTouchMode(false);
+//        rv.setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent ev) {
+//                switch (ev.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        Log.d("setOnTouchListener", "DOWN");
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        Log.d("setOnTouchListener", "MOVE");
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        Log.d("setOnTouchListener", "UP");
+//                        break;
+//                }
+//                return false;
+//            }
+//        });
+    }
+
+    private void myGetView(View v) {
+        if (v instanceof ViewGroup) {
+            myGetView(((ViewGroup) v).getChildAt(((ViewGroup) v).getChildCount() - 1));
+            return;
+        }
+        topView = v;
     }
 
 
@@ -69,27 +102,35 @@ public class NewHomeScrollerView extends RelativeLayout {
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        int visibleItemPosition = glm.findFirstVisibleItemPosition();
-        View itemView = glm.getChildAt(visibleItemPosition);
-        if (itemView != null) {
-            float rvY = itemView.getY();
-            switch (ev.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    mDownY = (int) ev.getY();
-                    isCanDownRoll = rv.getY() == 0;//true就可以向下滑
-                    isCanTopRoll = view2.getY() == 0;//true就可以向上滑
-                    break;
-                case MotionEvent.ACTION_MOVE:
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            mDownY = (int) ev.getY();
+            isCanDownRoll = rv.getY() == 0;//true就可以向下滑
+            isCanTopRoll = view2.getY() == 0;//true就可以向上滑
+        }
+        if (isHome) {
+            View itemView = glm.getChildAt(glm.findFirstVisibleItemPosition());
+            if (itemView != null) {
+                if (ev.getAction() == MotionEvent.ACTION_MOVE) {
                     int mMoveY = (int) ev.getY();
-//                if (mMoveY - mDownY > 50 && rvY == 0) {//如果从上往下滑动超过50像素,并且最小item的y还是0,就应该3d滚动了
-//                    isIntercept = true;
-//                }else
-//                    isRoll = false;
-                    //如果从上往下滑动超过50像素,并且最小item的y还是0,就应该3d滚动了
-                    isIntercept = mMoveY - mDownY > 50 && rvY == 0;
+                    isIntercept = mMoveY - mDownY > 30 && itemView.getY() == 0;
+//                    Log.d("setOnTouchListener","isIntercept = "+isIntercept);
+                }
+            } else {
+                isIntercept = false;
             }
         } else {
-            isIntercept = false;
+            if (ev.getAction() == MotionEvent.ACTION_MOVE) {
+                int mMoveY = (int) ev.getY();
+                if (mMoveY - mDownY > 30) {//从上往下划
+                    isIntercept = false;
+                } else if (mDownY - mMoveY > 30) {//从下往上划
+                    int height = view2.getHeight();
+                    int topViewHeight = topView.getHeight();
+                    float topViewY = topView.getY();
+                    int scrollY = view2.getScrollY();
+                    isIntercept = height + scrollY - topViewHeight >= topViewY;
+                }
+            }
         }
         return super.dispatchTouchEvent(ev);
     }
@@ -107,14 +148,12 @@ public class NewHomeScrollerView extends RelativeLayout {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 mDownY = (int) ev.getY();
-                Log.e("onTouchEvent", "ACTION_DOWN");
                 break;
             case MotionEvent.ACTION_MOVE:
                 int mMoveY = (int) ev.getY();
-                Log.e("onTouchEvent", "ACTION_MOVE");
                 float rollDistance = mMoveY - mDownY;
                 float i = (float) layoutHeight / (float) 90;
-                isDownRoll = rollDistance > 0;
+                boolean isDownRoll = rollDistance > 0;
                 if (isRollDoing) {
                     if (isDownRoll && isCanDownRoll) {//向下滑动并且上面View的y起始点<-10
                         changeViewYAndDegrees(view2, -layoutHeight + rollDistance, 90f - (rollDistance / i), view2.getHeight());
@@ -127,7 +166,6 @@ public class NewHomeScrollerView extends RelativeLayout {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("onTouchEvent", "ACTION_UP");
                 if (rv.getY() > layoutHeight / 2)//往下滚
                     upDownRoll();
                 else//否则往上滚
@@ -135,13 +173,14 @@ public class NewHomeScrollerView extends RelativeLayout {
                 break;
         }
         return true;
-//        return super.onTouchEvent(ev);
     }
 
     private void changeViewYAndDegrees(View view, float y, float rotationX, float pivotY) {
         view.setY(y);
         view.setRotationX(rotationX);
         view.setPivotY(pivotY);
+        if (view instanceof ScrollView)
+            Log.d("changeViewYAndDegrees", "setY = " + y + " 角度 = " + rotationX + "  pivotY = " + pivotY);
     }
 
     private void upTopRoll() {
@@ -149,7 +188,7 @@ public class NewHomeScrollerView extends RelativeLayout {
             @Override
             public void run() {
                 try {
-                    sleep(20);
+                    sleep(40);
                     Message message = Message.obtain();
                     message.what = 1;
                     handler.sendMessage(message);
@@ -165,7 +204,7 @@ public class NewHomeScrollerView extends RelativeLayout {
             @Override
             public void run() {
                 try {
-                    sleep(20);
+                    sleep(40);
                     Message message = Message.obtain();
                     message.what = 0;
                     handler.sendMessage(message);
@@ -174,7 +213,6 @@ public class NewHomeScrollerView extends RelativeLayout {
                 }
             }
         }.start();
-
     }
 
     Handler handler = new Handler() {
@@ -196,6 +234,7 @@ public class NewHomeScrollerView extends RelativeLayout {
                         upDownRoll();
                     else {
                         isRollDoing = true;
+                        isIntercept = false;
                         isHome = false;
                     }
                     break;
@@ -206,12 +245,11 @@ public class NewHomeScrollerView extends RelativeLayout {
 
                     float rvY = rv.getY() - distance < 0 ? 0 : rv.getY() - distance;
                     changeViewYAndDegrees(rv, rvY, 270f + view2TopDegrees, 0);
-
                     if (view2Y != -layoutHeight)
                         upTopRoll();
                     else {
                         isRollDoing = true;
-                        isIntercept = false;
+                        isIntercept = true;
                         isHome = true;
                     }
                     break;
