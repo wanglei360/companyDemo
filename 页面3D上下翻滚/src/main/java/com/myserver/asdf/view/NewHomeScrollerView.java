@@ -6,12 +6,14 @@ import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+
+import java.lang.ref.WeakReference;
+
 
 /**
  * 创建者：leiwang
@@ -20,8 +22,6 @@ import android.widget.ScrollView;
  * <p>修改人：
  * <p>修改时间：
  * <p>修改备注：
- * <p/>
- * <p/>
  * dispatchTouchEvent走完MotionEvent.ACTION_DOWN后,
  * 走onInterceptTouchEvent-->MotionEvent.ACTION_DOWN,返回false,
  * dispatchTouchEvent走MotionEvent.ACTION_MOVE
@@ -61,31 +61,11 @@ public class NewHomeScrollerView extends RelativeLayout {
         layoutHeight = getHeight();
         rv = (RecyclerView) getChildAt(1);
         view2 = (ScrollView) getChildAt(0);
+
         myGetView(view2);
         glm = (GridLayoutManager) rv.getLayoutManager();
         view2.setRotationX(90);
         view2.setY(-layoutHeight);
-//        view2.setPivotY(view2.getHeight());
-//        Log.d("changeViewYAndDegrees", "setY = " + (-layoutHeight) + " 角度 = " + 90 + "  pivotY = " + pivotY);
-
-//        view2.setFocusableInTouchMode(false);
-//        rv.setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent ev) {
-//                switch (ev.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        Log.d("setOnTouchListener", "DOWN");
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        Log.d("setOnTouchListener", "MOVE");
-//                        break;
-//                    case MotionEvent.ACTION_UP:
-//                        Log.d("setOnTouchListener", "UP");
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
     }
 
     private void myGetView(View v) {
@@ -107,28 +87,26 @@ public class NewHomeScrollerView extends RelativeLayout {
             isCanDownRoll = rv.getY() == 0;//true就可以向下滑
             isCanTopRoll = view2.getY() == 0;//true就可以向上滑
         }
+        int mMoveY = (int) ev.getY();
         if (isHome) {
             View itemView = glm.getChildAt(glm.findFirstVisibleItemPosition());
             if (itemView != null) {
                 if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-                    int mMoveY = (int) ev.getY();
-                    isIntercept = mMoveY - mDownY > 30 && itemView.getY() == 0;
-//                    Log.d("setOnTouchListener","isIntercept = "+isIntercept);
+                    if (mDownY - mMoveY > 30) {//从下往上划
+                        isIntercept = false;
+                    } else if (mMoveY - mDownY > 30) {//从上往下划
+                        isIntercept = itemView.getY() == 0;
+                    }
                 }
             } else {
                 isIntercept = false;
             }
         } else {
             if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-                int mMoveY = (int) ev.getY();
                 if (mMoveY - mDownY > 30) {//从上往下划
                     isIntercept = false;
                 } else if (mDownY - mMoveY > 30) {//从下往上划
-                    int height = view2.getHeight();
-                    int topViewHeight = topView.getHeight();
-                    float topViewY = topView.getY();
-                    int scrollY = view2.getScrollY();
-                    isIntercept = height + scrollY - topViewHeight >= topViewY;
+                    isIntercept = view2.getHeight() + view2.getScrollY() - topView.getHeight() >= topView.getY();
                 }
             }
         }
@@ -179,8 +157,6 @@ public class NewHomeScrollerView extends RelativeLayout {
         view.setY(y);
         view.setRotationX(rotationX);
         view.setPivotY(pivotY);
-        if (view instanceof ScrollView)
-            Log.d("changeViewYAndDegrees", "setY = " + y + " 角度 = " + rotationX + "  pivotY = " + pivotY);
     }
 
     private void upTopRoll() {
@@ -240,16 +216,15 @@ public class NewHomeScrollerView extends RelativeLayout {
                     break;
                 case 1:
                     float view2Y = view2.getY() - distance < -layoutHeight ? -layoutHeight : view2.getY() - distance;
-                    float view2TopDegrees = Math.abs(view2Y) / i;
-                    changeViewYAndDegrees(view2, view2Y, view2TopDegrees, view2.getHeight());
+                    changeViewYAndDegrees(view2, view2Y, Math.abs(view2Y) / i, view2.getHeight());
 
                     float rvY = rv.getY() - distance < 0 ? 0 : rv.getY() - distance;
-                    changeViewYAndDegrees(rv, rvY, 270f + view2TopDegrees, 0);
+                    changeViewYAndDegrees(rv, rvY, 270f + Math.abs(view2Y) / i, 0);
                     if (view2Y != -layoutHeight)
                         upTopRoll();
                     else {
                         isRollDoing = true;
-                        isIntercept = true;
+                        isIntercept = false;
                         isHome = true;
                     }
                     break;
