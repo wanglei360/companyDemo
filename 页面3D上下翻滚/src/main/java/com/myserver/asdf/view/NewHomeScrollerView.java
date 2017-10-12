@@ -1,6 +1,7 @@
 package com.myserver.asdf.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-
-import java.lang.ref.WeakReference;
 
 
 /**
@@ -30,7 +29,7 @@ import java.lang.ref.WeakReference;
  */
 public class NewHomeScrollerView extends RelativeLayout {
 
-    private ScrollView view2;
+    private ScrollView sv;
     private RecyclerView rv;
     private GridLayoutManager glm;
     private int layoutHeight;
@@ -60,12 +59,13 @@ public class NewHomeScrollerView extends RelativeLayout {
         isRollDoing = true;
         layoutHeight = getHeight();
         rv = (RecyclerView) getChildAt(1);
-        view2 = (ScrollView) getChildAt(0);
+        sv = (ScrollView) getChildAt(0);
 
-        myGetView(view2);
+        myGetView(sv);
         glm = (GridLayoutManager) rv.getLayoutManager();
-        view2.setRotationX(90);
-        view2.setY(-layoutHeight);
+        sv.setRotationX(90);
+        sv.setY(-layoutHeight);
+        topView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     private void myGetView(View v) {
@@ -85,7 +85,7 @@ public class NewHomeScrollerView extends RelativeLayout {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             mDownY = (int) ev.getY();
             isCanDownRoll = rv.getY() == 0;//true就可以向下滑
-            isCanTopRoll = view2.getY() == 0;//true就可以向上滑
+            isCanTopRoll = sv.getY() == 0;//true就可以向上滑
         }
         int mMoveY = (int) ev.getY();
         if (isHome) {
@@ -106,7 +106,7 @@ public class NewHomeScrollerView extends RelativeLayout {
                 if (mMoveY - mDownY > 30) {//从上往下划
                     isIntercept = false;
                 } else if (mDownY - mMoveY > 30) {//从下往上划
-                    isIntercept = view2.getHeight() + view2.getScrollY() - topView.getHeight() >= topView.getY();
+                    isIntercept = sv.getHeight() + sv.getScrollY() - topView.getHeight() >= topView.getY();
                 }
             }
         }
@@ -134,11 +134,11 @@ public class NewHomeScrollerView extends RelativeLayout {
                 boolean isDownRoll = rollDistance > 0;
                 if (isRollDoing) {
                     if (isDownRoll && isCanDownRoll) {//向下滑动并且上面View的y起始点<-10
-                        changeViewYAndDegrees(view2, -layoutHeight + rollDistance, 90f - (rollDistance / i), view2.getHeight());
+                        changeViewYAndDegrees(sv, -layoutHeight + rollDistance, 90f - (rollDistance / i), sv.getHeight());
                         changeViewYAndDegrees(rv, rollDistance, 360f - (rollDistance / i), 0);
                     } else if (!isDownRoll && isCanTopRoll) {//向上滑动
                         float absRollDistance = Math.abs(rollDistance);
-                        changeViewYAndDegrees(view2, 0 - absRollDistance, absRollDistance / i, view2.getHeight());
+                        changeViewYAndDegrees(sv, 0 - absRollDistance, absRollDistance / i, sv.getHeight());
                         changeViewYAndDegrees(rv, layoutHeight - absRollDistance, 270f + absRollDistance / i, 0);
                     }
                 }
@@ -198,12 +198,12 @@ public class NewHomeScrollerView extends RelativeLayout {
             isRollDoing = false;
             switch (msg.what) {
                 case 0:
-                    float view2DownY = view2.getY() + distance > 0 ? 0 : view2.getY() + distance;
-                    float v = Math.abs(view2DownY) / i;
-                    changeViewYAndDegrees(view2, view2DownY, v, view2.getHeight());
+                    float sv2DownY = sv.getY() + distance > 0 ? 0 : sv.getY() + distance;
+                    float v = Math.abs(sv2DownY) / i;
+                    changeViewYAndDegrees(sv, sv2DownY, v, sv.getHeight());
 
                     float rvDownY = rv.getY() + distance > layoutHeight ? layoutHeight : rv.getY() + distance;
-                    float v3 = 360f - (90f - (Math.abs(view2DownY) / i));
+                    float v3 = 360f - (90f - (Math.abs(sv2DownY) / i));
                     changeViewYAndDegrees(rv, rvDownY, v3, 0);
 
                     if (v > 0)
@@ -215,12 +215,12 @@ public class NewHomeScrollerView extends RelativeLayout {
                     }
                     break;
                 case 1:
-                    float view2Y = view2.getY() - distance < -layoutHeight ? -layoutHeight : view2.getY() - distance;
-                    changeViewYAndDegrees(view2, view2Y, Math.abs(view2Y) / i, view2.getHeight());
+                    float sv2Y = sv.getY() - distance < -layoutHeight ? -layoutHeight : sv.getY() - distance;
+                    changeViewYAndDegrees(sv, sv2Y, Math.abs(sv2Y) / i, sv.getHeight());
 
                     float rvY = rv.getY() - distance < 0 ? 0 : rv.getY() - distance;
-                    changeViewYAndDegrees(rv, rvY, 270f + Math.abs(view2Y) / i, 0);
-                    if (view2Y != -layoutHeight)
+                    changeViewYAndDegrees(rv, rvY, 270f + Math.abs(sv2Y) / i, 0);
+                    if (sv2Y != -layoutHeight)
                         upTopRoll();
                     else {
                         isRollDoing = true;
