@@ -19,14 +19,10 @@ import android.widget.TextView;
  * <p>修改备注：
  */
 public class MyRelativeLayout extends RelativeLayout {
-    private Context context;
     private TextView tv;
     private LinearLayout anim_view_layout;
     private View view, view1, view2, view3, view4;
     private int viewHeight;
-    private String tvText;
-    private float viewX;
-    private float viewY;
     private int animTiem = 1000;
 
     public ObjectAnimator myAnim(Object view, String propertyName, long animTiem, float... values) {
@@ -42,28 +38,34 @@ public class MyRelativeLayout extends RelativeLayout {
             public void run() {
                 int height = tv.getHeight();
                 int width = tv.getWidth();
+                float tvY = tv.getY();
                 LayoutParams lp = new LayoutParams(width, viewHeight);
                 anim_view_layout.setLayoutParams(lp);
                 anim_view_layout.setVisibility(View.VISIBLE);
 
-                ObjectAnimator textAnimator = myAnim(tv, "translationY", animTiem / 2, viewHeight, viewHeight / 2 - height / 2);
+//                ObjectAnimator textAnimator = myAnim(tv, "translationY", animTiem / 2, viewHeight, viewHeight / 2 - height / 2);
+                ObjectAnimator textAnimator = myAnim(tv, "translationY", animTiem / 2, viewHeight, tvY);
 
-                ObjectAnimator view1Animator = myAnim(view1, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+//                ObjectAnimator view1Animator = myAnim(view1, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+                ObjectAnimator view1Animator = myAnim(view1, "translationY", animTiem / 2, viewHeight + height / 2, tvY+(height/2));
 
                 ObjectAnimator view1CurtailAnimator = myAnim(view1, "scaleY", animTiem, 1f, 0.01f);
                 view1.setPivotY(3);
 
-                ObjectAnimator view2Animator = myAnim(view2, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+//                ObjectAnimator view2Animator = myAnim(view2, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+                ObjectAnimator view2Animator = myAnim(view2, "translationY", animTiem / 2, viewHeight + height / 2, tvY+(height/2));
 
                 ObjectAnimator view2CurtailAnimator = myAnim(view2, "scaleY", (long) (animTiem * 0.8), 1f, 0.01f);
                 view2.setPivotY(3);
 
-                ObjectAnimator view3Animator = myAnim(view3, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+//                ObjectAnimator view3Animator = myAnim(view3, "translationY", animTiem / 2, viewHeight + height / 2, viewHeight / 2);
+                ObjectAnimator view3Animator = myAnim(view3, "translationY", animTiem / 2, viewHeight + height / 2, tvY+(height/2));
 
                 ObjectAnimator view3CurtailAnimator = myAnim(view3, "scaleY", (long) (animTiem * 0.9), 1f, 0.01f);
                 view3.setPivotY(3);
 
-                ObjectAnimator view4Animator = myAnim(view4, "translationY", (long) (animTiem * 0.9), viewHeight + viewHeight + height / 2, viewHeight / 2);
+//                ObjectAnimator view4Animator = myAnim(view4, "translationY", (long) (animTiem * 0.9), viewHeight + viewHeight + height / 2, viewHeight / 2);
+                ObjectAnimator view4Animator = myAnim(view4, "translationY", (long) (animTiem * 0.9), viewHeight + viewHeight + height / 2, tvY+(height/2));
 
                 ObjectAnimator view4CurtailAnimator = myAnim(view4, "scaleY", animTiem, 1f, 0.01f);
                 view4.setPivotY(10);
@@ -95,7 +97,6 @@ public class MyRelativeLayout extends RelativeLayout {
     }
 
     private void init(Context context) {
-        this.context = context;
         view = LayoutInflater.from(context).inflate(R.layout.my_text_layout, this, true);
         tv = (TextView) view.findViewById(R.id.tv);
         view1 = view.findViewById(R.id.view1);
@@ -110,7 +111,5 @@ public class MyRelativeLayout extends RelativeLayout {
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
         viewHeight = view.getHeight();
-        viewX = view.getX();
-        viewY = view.getY();
     }
 }

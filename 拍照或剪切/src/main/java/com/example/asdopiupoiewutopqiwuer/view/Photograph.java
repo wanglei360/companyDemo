@@ -100,8 +100,8 @@ public class Photograph {
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("output", uri);
-         intent.putExtra("aspectX", 1);//裁剪框的比例
-         intent.putExtra("aspectY", 1);//裁剪框的比例
+        intent.putExtra("aspectX", 1);//裁剪框的比例
+        intent.putExtra("aspectY", 1);//裁剪框的比例
         intent.putExtra("outputX", output);
         intent.putExtra("outputY", output);
         intent.putExtra("return-data", true);
