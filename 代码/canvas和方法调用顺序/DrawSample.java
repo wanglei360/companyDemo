@@ -20,7 +20,7 @@ import android.view.View;
  * <p>类描述： todo 几个方法的调用顺序,和画圆,画线的canvas实现 path画图形
  * <p>修改人：
  * <p>修改时间：
- * <p>修改备注：
+ * <p>修改备注：仪表盘/src/main/java/com/demo/newdemo4/DrawSample.java
  */
 public class DrawSample extends View {
     private String TAG = "MyLayout";
