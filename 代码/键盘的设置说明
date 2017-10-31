@@ -1,0 +1,36 @@
+
+todo 修改键盘上的回车键内容
+
+actionUnspecified   未指定，对应常量EditorInfo.IME_ACTION_UNSPECIFIED.
+actionNone          没有动作,对应常量EditorInfo.IME_ACTION_NONE
+actionGo            去往，对应常量EditorInfo.IME_ACTION_GO
+actionSearch        搜索，对应常量EditorInfo.IME_ACTION_SEARCH
+actionSend          发送，对应常量EditorInfo.IME_ACTION_SEND
+actionNext          下一个，对应常量EditorInfo.IME_ACTION_NEXT
+actionDone          完成，对应常量EditorInfo.IME_ACTION_DONE
+
+
+<EditText
+        android:imeOptions="actionSearch"
+        android:singleLine="true"/>//todo 这两个必须同时使用,否则无效
+----------------------------------------------------------------------------------------------------
+TODO 监听回车键
+
+et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                //当actionId == XX_SEND 或者 XX_DONE时都触发
+                //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
+                //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
+                if (actionId == EditorInfo.IME_ACTION_SEND
+                        || actionId == EditorInfo.IME_ACTION_DONE
+                        || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+                    TODO 回车被点击了
+                    Log.d("OnKeyListener","回车被点击了");
+                }
+                return false;
+            }
+        });
+
+
+
