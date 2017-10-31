@@ -1,7 +1,10 @@
 package com.edit;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -38,24 +41,9 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
 
         //判断键盘弹出或者隐藏的监听器,通过键盘弹出与隐藏跟布局是否上移判断
         root_layout.addOnLayoutChangeListener(this);
+
         //小键盘的回车键监听
         et.setOnEditorActionListener(this);
-    }
-
-    private void initView() {
-        lv = findViewById(R.id.lv);
-        et = findViewById(R.id.et);
-        root_layout = findViewById(R.id.root_layout);
-        et_root_layout = findViewById(R.id.et_root_layout);
-        title_layout = findViewById(R.id.title_layout);
-        et_bottom_layout = findViewById(R.id.et_bottom_layout);
-
-        list = new ArrayList<>();
-        for (int x = 0; x < 100; x++) {
-            list.add(x + "");
-        }
-        myAdapter = new MyAdapter(list);
-        lv.setAdapter(myAdapter);
     }
 
     @Override
@@ -90,6 +78,21 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
         }
     }
 
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        //当actionId == XX_SEND 或者 XX_DONE时都触发
+        //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
+        //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
+        if (actionId == EditorInfo.IME_ACTION_SEND
+                || actionId == EditorInfo.IME_ACTION_DONE
+                || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+            //TODO 回车被点击了
+            Log.d("OnKeyListener","回车被点击了");
+            Toast.makeText(this,"回车被点击了",Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
+
     private void setLayoutLocation(float etRootY, float etBottomLayoutY, int paramsHeight, final int titleHeight, final int adapterCount) {
         et_root_layout.setY(etRootY);
         et_bottom_layout.setY(etBottomLayoutY);
@@ -108,18 +111,26 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
         });
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        //当actionId == XX_SEND 或者 XX_DONE时都触发
-        //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
-        //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
-        if (actionId == EditorInfo.IME_ACTION_SEND
-                || actionId == EditorInfo.IME_ACTION_DONE
-                || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
-            //TODO 回车被点击了
-            Log.d("OnKeyListener","回车被点击了");
-            Toast.makeText(this,"回车被点击了",Toast.LENGTH_SHORT).show();
+    private void initView() {
+        lv = findViewById(R.id.lv);
+        et = findViewById(R.id.et);
+        root_layout = findViewById(R.id.root_layout);
+        et_root_layout = findViewById(R.id.et_root_layout);
+        title_layout = findViewById(R.id.title_layout);
+        et_bottom_layout = findViewById(R.id.et_bottom_layout);
+
+        list = new ArrayList<>();
+        for (int x = 0; x < 100; x++) {
+            list.add(x + "");
         }
-        return false;
+        myAdapter = new MyAdapter(list);
+        lv.setAdapter(myAdapter);
+
+        TextView title = findViewById(R.id.title);
+        title.setTextSize(20);
+        title.setText("Title");
+        title.setTextColor(ContextCompat.getColor(this, R.color.white));
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/HuaKangWaWaTiW5.TTF");
+        title.setTypeface(typeFace);
     }
 }
