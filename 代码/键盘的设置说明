@@ -1,6 +1,34 @@
+path:companyDemo/键盘弹出布局指定上移量/src/main/java/com/edit
+----------------------------------------------------------------------------------------------------
+//todo 监听键盘是否弹起
+windowSoftInputMode属性说明:http://www.jianshu.com/p/a9fb4230eb40
+    值	                            作用
+adjustPan	        当显示软键盘时，调整window的空白区域来显示软键盘。软键盘还是有可能遮挡一些有内容区域，
+                 这时用户就只有退出软键盘才能看到这些被遮挡区域并进行交互。
+adjustNothing	    当显示软键盘时，不调整window的布局
+adjustResize	    当显示软键盘时，调整window内的控件大小以便显示软键盘。这样的话控件可能会变形。
+adjustUnspecified	不指定显示软件盘时，window的调整方式。系统去判断内容区域可滚动为adjustPan,
+                 不可滚动为adjustResize
+stateAlwaysHidden	总是隐藏软键盘。
+stateAlwaysVisible	总是显示软键盘
+stateHidden	        用户导航（navigate）到你的窗口的时候,隐藏软键盘
+stateVisible	    用户导航（navigate）到你的窗口的时候，显示软键盘
+stateUnchanged	    当这个activity出现时，软键盘将一直保持在上一个activity里的状态，无论是隐藏还是显示
+stateUnspecified	未指定软键盘的状态，系统将自动选择一个合适的状态或依赖于主题中的设置，这是默认的设置
 
+清单文件 android:windowSoftInputMode="stateUnchanged"
+root_layout.addOnLayoutChangeListener(this);//todo 监听键盘是否弹起
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        int height = 200;
+        int keyboardMove = 100;
+        if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyboardMove)) {//键盘弹起
+            //todo 键盘弹起     oldBottom - bottom = 应该就是键盘的高度
+        } else if (oldBottom != 0 && bottom != 0 && (bottom - oldBottom > keyboardMove)) {//键盘隐藏
+            //todo 键盘隐藏起
+        }
+    }
+----------------------------------------------------------------------------------------------------
 todo 修改键盘上的回车键内容
-
 actionUnspecified   未指定，对应常量EditorInfo.IME_ACTION_UNSPECIFIED.
 actionNone          没有动作,对应常量EditorInfo.IME_ACTION_NONE
 actionGo            去往，对应常量EditorInfo.IME_ACTION_GO
@@ -15,7 +43,6 @@ actionDone          完成，对应常量EditorInfo.IME_ACTION_DONE
         android:singleLine="true"/>//todo 这两个必须同时使用,否则无效
 ----------------------------------------------------------------------------------------------------
 TODO 监听回车键
-
 et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -31,6 +58,6 @@ et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 return false;
             }
         });
-
+----------------------------------------------------------------------------------------------------
 
 

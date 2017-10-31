@@ -3,19 +3,21 @@ package com.edit;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends Activity implements View.OnLayoutChangeListener {
+public class MainActivity extends Activity implements View.OnLayoutChangeListener,TextView.OnEditorActionListener {
 
     private EditText et;
     private LinearLayout et_bottom_layout;
@@ -36,6 +38,8 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
 
         //判断键盘弹出或者隐藏的监听器,通过键盘弹出与隐藏跟布局是否上移判断
         root_layout.addOnLayoutChangeListener(this);
+        //小键盘的回车键监听
+        et.setOnEditorActionListener(this);
     }
 
     private void initView() {
@@ -68,7 +72,7 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
 
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        int height = 200;
+        int height =150;
         int keyboardMove = 100;
         if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyboardMove)) {//键盘弹起
             SmallLVHeight = SmallLVHeight == 0 ? lv.getHeight() : SmallLVHeight;
@@ -97,11 +101,25 @@ public class MainActivity extends Activity implements View.OnLayoutChangeListene
                 lv.setY(titleHeight);
                 if (myAdapter != null && list != null) {
                     if (list.size() > 0) {
-                        lv.smoothScrollToPosition(adapterCount);
+                        lv.smoothScrollToPosition(adapterCount);//指定显示第几个条目
                     }
                 }
             }
         });
     }
 
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        //当actionId == XX_SEND 或者 XX_DONE时都触发
+        //或者event.getKeyCode == ENTER 且 event.getAction == ACTION_DOWN时也触发
+        //注意，这是一定要判断event != null。因为在某些输入法上会返回null。
+        if (actionId == EditorInfo.IME_ACTION_SEND
+                || actionId == EditorInfo.IME_ACTION_DONE
+                || (event != null && KeyEvent.KEYCODE_ENTER == event.getKeyCode() && KeyEvent.ACTION_DOWN == event.getAction())) {
+            //TODO 回车被点击了
+            Log.d("OnKeyListener","回车被点击了");
+            Toast.makeText(this,"回车被点击了",Toast.LENGTH_SHORT).show();
+        }
+        return false;
+    }
 }
