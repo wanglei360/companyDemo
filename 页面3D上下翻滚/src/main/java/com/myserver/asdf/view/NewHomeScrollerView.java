@@ -2,6 +2,7 @@ package com.myserver.asdf.view;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,11 +21,11 @@ import android.widget.ScrollView;
  * <p>类描述：
  * <p>修改人：
  * <p>修改时间：
- * <p>修改备注：
+ * <p>修改备注：todo 华为手机setRotationX方法不能用,并且有bug,所以判断华为手机直接去掉了3D翻滚效果,后期再改
  * dispatchTouchEvent走完MotionEvent.ACTION_DOWN后,
  * 走onInterceptTouchEvent-->MotionEvent.ACTION_DOWN,返回false,
  * dispatchTouchEvent走MotionEvent.ACTION_MOVE
- * <p/>
+ * <p>
  * 走onInterceptTouchEvent如果返回true,onTouchEvent也要返回true,否则后续的MOVE和up不走了就
  */
 public class NewHomeScrollerView extends RelativeLayout {
@@ -39,6 +40,7 @@ public class NewHomeScrollerView extends RelativeLayout {
     private boolean isHome;//true就是home页,否则反之
     private int mDownY;
     private View topView;
+    private boolean isHuawei;
 
     public NewHomeScrollerView(Context context) {
         super(context);
@@ -55,6 +57,7 @@ public class NewHomeScrollerView extends RelativeLayout {
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
+        isHuawei = Build.MANUFACTURER.toLowerCase().contains("huawei");
         isHome = true;
         isRollDoing = true;
         layoutHeight = getHeight();
@@ -63,7 +66,8 @@ public class NewHomeScrollerView extends RelativeLayout {
 
         myGetView(sv);
         glm = (GridLayoutManager) rv.getLayoutManager();
-        sv.setRotationX(90);
+        if (!isHuawei)
+            sv.setRotationX(90);
         sv.setY(-layoutHeight);
         topView.setBackgroundColor(Color.TRANSPARENT);
     }
@@ -155,7 +159,9 @@ public class NewHomeScrollerView extends RelativeLayout {
 
     private void changeViewYAndDegrees(View view, float y, float rotationX, float pivotY) {
         view.setY(y);
-        view.setRotationX(rotationX);
+//        setMyRotationX(view, rotationX);
+        if (!isHuawei)
+            view.setRotationX(rotationX);
         view.setPivotY(pivotY);
     }
 
