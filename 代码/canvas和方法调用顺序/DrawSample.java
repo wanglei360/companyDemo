@@ -162,11 +162,13 @@ public class DrawSample extends View {
 
     private void 画Bitmap(Canvas canvas) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.boy);
-
+//Matrix的每种操作都有set、pre、post三种操作，set是清空队列再添加，pre是在队列最前面插入，post是在队列最后面插入。
+//除了translate，其他三种操作都可以指定中心点。
         Matrix matrix = new Matrix();
 //        matrix.setScale(sx, sy);      //缩放,按比例
 //        matrix.postTranslate(px, dy); //位移,实际的点
 //        matrix.setSkew(0f, skewKy);   //错切
+//        matrix.setRotate(66);         //旋转
         canvas.drawBitmap(bitmap, matrix, null);
     }
 

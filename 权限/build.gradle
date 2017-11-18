@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+
+    defaultConfig {
+        applicationId "com.permission.demo"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+
+//todo----------------------------权限-----------------------------------------------
+    //todo https://github.com/yanzhenjie/AndPermission/blob/master/README-CN.md
+    compile 'com.yanzhenjie:permission:1.1.2'
+    /*
+    // todo 混淆
+    如果使用Listener接受回调结果，不用任何配置。
+    使用注解的方式回调结果，在proguard中添加如下配置：
+    -keepclassmembers class ** {
+        @com.yanzhenjie.permission.PermissionYes <methods>;
+    }
+    -keepclassmembers class ** {
+        @com.yanzhenjie.permission.PermissionNo <methods>;
+    }
+     */
+//todo----------------------------权限-----------------------------------------------
+}

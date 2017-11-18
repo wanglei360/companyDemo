@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">携帯電話の通信録を得る</string>
+    <string name="successfully">成功</string>
+    <string name="failure">失敗</string>
+</resources>

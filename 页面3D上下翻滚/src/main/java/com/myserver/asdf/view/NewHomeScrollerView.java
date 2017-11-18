@@ -1,6 +1,7 @@
 package com.myserver.asdf.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
@@ -8,9 +9,11 @@ import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
@@ -41,17 +44,29 @@ public class NewHomeScrollerView extends RelativeLayout {
     private int mDownY;
     private View topView;
     private boolean isHuawei;
+    private Context context;
+    private ImageView rvIV;
+    private ImageView svIV;
+    private Bitmap svBmp;
+    private Bitmap rvBmp;
 
     public NewHomeScrollerView(Context context) {
         super(context);
+        init(context);
     }
 
     public NewHomeScrollerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public NewHomeScrollerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    private void init(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -68,6 +83,18 @@ public class NewHomeScrollerView extends RelativeLayout {
         glm = (GridLayoutManager) rv.getLayoutManager();
         if (!isHuawei)
             sv.setRotationX(90);
+        else {
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            rvIV = new ImageView(context);
+            rvIV.setLayoutParams(layoutParams);
+            rvIV.setVisibility(View.GONE);
+
+            svIV = new ImageView(context);
+            svIV.setLayoutParams(layoutParams);
+            svIV.setVisibility(View.GONE);
+            addView(rvIV);
+            addView(svIV);
+        }
         sv.setY(-layoutHeight);
         topView.setBackgroundColor(Color.TRANSPARENT);
     }
@@ -119,6 +146,19 @@ public class NewHomeScrollerView extends RelativeLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (isIntercept && isHuawei) {
+            Log.d("onInterceptTouchEvent", "isIntercept = " + isIntercept);
+            svBmp = shotView(sv);
+            rvBmp = shotView(rv);
+
+
+//            sv.setRotationX(90);
+//            sv.
+//            svIV
+//                    rvIV
+
+
+        }
         return isIntercept;
     }
 
@@ -159,7 +199,6 @@ public class NewHomeScrollerView extends RelativeLayout {
 
     private void changeViewYAndDegrees(View view, float y, float rotationX, float pivotY) {
         view.setY(y);
-//        setMyRotationX(view, rotationX);
         if (!isHuawei)
             view.setRotationX(rotationX);
         view.setPivotY(pivotY);
@@ -237,4 +276,41 @@ public class NewHomeScrollerView extends RelativeLayout {
             }
         }
     };
+
+
+    /**
+     * 截取view 的指定宽高和起始位置
+     *
+     * @param view 需要生产截图的view ,生成的bitmap 注意不使用的时候需要销毁
+     * @return 注意：此方法可在任意线程下运行
+     */
+    public Bitmap shotView(View view) {
+        if (notNull(view) && view.getWidth() > 0 && view.getHeight() > 0) {//此处宽高有限制，否则创建图出错
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache(), 0, 0, view.getWidth(), view.getHeight());//重新生成一个bitmap，原始的缓存会被销毁
+            view.setDrawingCacheEnabled(false);
+            return bitmap;
+        } else return null;
+    }
+
+    /**
+     * 判断传入参数是否有null
+     *
+     * @param objects -需要判断的对象集
+     * @return true：没有null false:有null
+     */
+    public boolean notNull(Object... objects) {
+
+        if (objects != null && objects.length > 0) {
+            for (Object ob : objects) {
+                if (ob == null) {
+                    return false;
+                }
+            }
+            return true;
+
+        } else {
+            return false;
+        }
+    }
 }

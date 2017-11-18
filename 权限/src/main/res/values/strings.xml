@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Get mobile phone address book</string>
+    <string name="successfully">Succeed</string>
+    <string name="failure">failure</string>
+</resources>

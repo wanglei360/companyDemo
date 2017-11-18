@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">獲取手機通訊錄</string>
+    <string name="successfully">成功了</string>
+    <string name="failure">失敗了</string>
+</resources>
