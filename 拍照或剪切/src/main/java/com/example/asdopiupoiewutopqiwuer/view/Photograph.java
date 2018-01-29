@@ -1,15 +1,19 @@
 package com.example.asdopiupoiewutopqiwuer.view;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -44,7 +48,7 @@ public class Photograph {
     /**
      * @param activity 拍照完需要剪切,所以必须用startActivityForResult,所以必须有Activity
      */
-    public void photographOrPick(Activity activity) {
+    public void photographOrPick(final Activity activity) {
         this.activity = activity;
         uri = Uri.fromFile(storagePath());
         dialog = new AlertDialog.Builder(activity).setItems(
@@ -52,10 +56,18 @@ public class Photograph {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            photograph();
+                        if (ContextCompat.checkSelfPermission(activity,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(activity,
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    DemoActivity.MY_PERMISSIONS_REQUEST_CALL_PHONE2);
                         } else {
-                            pick();
+                            if (which == 0) {
+                                photograph();
+                            } else {
+                                pick();
+                            }
                         }
                     }
                 }).create();
@@ -78,7 +90,15 @@ public class Photograph {
     }
 
     public Bitmap pickBitmap(Intent data) {
-        Bitmap bitmap = getBitmap(data.getData().getPath());
+        Bitmap bitmap = null;
+        try {
+            bitmap = getBitmap(data.getData().getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (bitmap == null) {
+            bitmap = getBitmap(storagePath().getAbsolutePath());
+        }
         dialogDestroy();
         return bitmap;
     }
