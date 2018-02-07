@@ -3,6 +3,8 @@ package com.example.asdopiupoiewutopqiwuer.view;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +19,13 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.SettingService;
+
 import java.io.File;
+import java.util.List;
 
 /**
  * 创建者：wanglei
@@ -55,25 +63,42 @@ public class Photograph {
                 new String[]{"拍照", "相册"},
                 new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (ContextCompat.checkSelfPermission(activity,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(activity,
-                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    DemoActivity.MY_PERMISSIONS_REQUEST_CALL_PHONE2);
-                        } else {
-                            if (which == 0) {
-                                photograph();
-                            } else {
-                                pick();
+                    public void onClick(DialogInterface dialog, final int which) {
+                        AndPermission.with(activity)
+                                .permission(Permission.WRITE_EXTERNAL_STORAGE)
+                                .onGranted(new Action() {
+                                    @Override
+                                    public void onAction(List<String> permissions) {
+                                        Log.d("permissions", "onGranted");
+                                        if (which == 0) {
+                                            photograph();
+                                        } else {
+                                            pick();
+                                        }
+                                    }
+                                }).onDenied(new Action() {
+                            @Override
+                            public void onAction(List<String> permissions) {//禁止
+                                Log.d("permissions", "onDenied");
+                                if (AndPermission.hasAlwaysDeniedPermission(activity, permissions)) {
+                                    // 这里使用一个Dialog展示没有这些权限应用程序无法继续运行，询问用户是否去设置中授权。
+                                    SettingService settingService = AndPermission.permissionSetting(activity);
+                                    // 如果用户同意去设置：
+                                    settingService.execute();
+                                }
                             }
-                        }
+                        }).start();
                     }
                 }).create();
         if (!dialog.isShowing()) {
             dialog.show();
         }
+    }
+
+    private void showPermissionDialog(Context context){
+        Dialog dialog = new Dialog(context);
+        dialog.setTitle("因为拍摄或选取的照片要保存当前手机裁剪，所以需要此权限，请放开");
+        dialog.show();
     }
 
     /**
@@ -178,5 +203,11 @@ public class Photograph {
         activity = null;
         File file = storagePath();
         boolean delete = file.delete();
+    }
+
+    public void er() {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, DemoActivity.MY_PERMISSIONS_REQUEST_CALL_PHONE2);
+        }
     }
 }

@@ -20,4 +20,6 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:+'
+    compile 'com.yanzhenjie:permission:2.0.0-alpha'
+
 }

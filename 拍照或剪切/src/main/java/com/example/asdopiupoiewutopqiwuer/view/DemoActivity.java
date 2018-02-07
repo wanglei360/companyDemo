@@ -1,16 +1,25 @@
 package com.example.asdopiupoiewutopqiwuer.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.asdopiupoiewutopqiwuer.R;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
+
+import java.util.List;
 
 /**
  * 创建者：wanglei
@@ -74,30 +83,45 @@ public class DemoActivity extends Activity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         if (requestCode == MY_PERMISSIONS_REQUEST_CALL_PHONE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d("", "");
+//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 //                takePhoto();
-            } else {
-                // Permission Denied
-                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-            }
+//            } else {
+            // Permission Denied
+//                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+//            }
         }
 
 
         if (requestCode == MY_PERMISSIONS_REQUEST_CALL_PHONE2) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                choosePhoto();
-                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
-
-            } else {
-                // Permission Denied
-                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            Log.d("", "");
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this, "得到权限", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, "没有得到权限", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                    intent.setData(Uri.fromParts("package", getPackageName(), null));
+                    startActivity(intent);
+                }
             }
+//                choosePhoto();
+//                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+
+//            } else {
+            // Permission Denied
+//                Toast.makeText(DemoActivity.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+//            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+
     public static int MY_PERMISSIONS_REQUEST_CALL_PHONE2 = 9;
     public static int MY_PERMISSIONS_REQUEST_CALL_PHONE = 8;
+
 
     @Override
     protected void onDestroy() {
