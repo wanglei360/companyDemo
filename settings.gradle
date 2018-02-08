@@ -1,4 +1,4 @@
-include ':app', ':上下页立体翻滚', ':weiyidonghua', ':listviewext', ':搜索框动画', ':键盘弹出布局指定上移量', ':权限',
+include ':app', ':上下页立体翻滚', ':weiyidonghua', ':listviewext', ':搜索框动画', ':键盘弹出布局指定上移量', ':权限', ':属性动画',
         ':ListView可拉开新条目放大', ':从上往下列表动画', ':圆圈放大', ':gridView样式的ListView',
         ':TextView向上浮动', ':登陆之前', ':Activity动画切换', ':截屏或指定区域截图', ':View转bitmap',
         ':GridViewItemClikAnim', '页面3D上下翻滚', '拍照或剪切', '仪表盘'

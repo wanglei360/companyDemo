@@ -1,0 +1,10 @@
+github搜索Eyes，可以更改状态颜色，但是5。0以前的更改不了字体的颜色，
+也就是说，5.0以前的如果状态栏改成白色背景，就看不到那些字了，因为颜色相同
+
+在styles中，<item name="colorPrimaryDark">@color/white</item>可以控制状态栏的颜色，
+可以同时跟Eyes使用，5.0之后走Eyes，改变底色和字的颜色，5.0之前走默认设置的颜色，但是字的底色不改变，
+大多都是默认白色
+
+获取状态栏高度：
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int statusBarHeight = getResources().getDimensionPixelSize(resourceId);
