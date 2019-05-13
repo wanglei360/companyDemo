@@ -2,10 +2,11 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.4'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -14,7 +15,10 @@ buildscript {
 
 allprojects {
     repositories {
+        google()
         jcenter()
+        //引入BaseRecyclerViewAdapterHelper使用
+        maven { url "https://jitpack.io" }
     }
 }
 
@@ -23,9 +27,8 @@ task clean(type: Delete) {
 }
 ext {
     android = [
-            compileSdkVersion: 23,
-            buildToolsVersion: "23.0.2",
+            compileSdkVersion: 28,
             minSdkVersion    : 14,
-            targetSdkVersion : 22,
+            targetSdkVersion : 28,
     ]
 }

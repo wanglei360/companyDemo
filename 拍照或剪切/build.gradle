@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '26.0.2'
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
 
     defaultConfig {
         applicationId "com.example.asdopiupoiewutopqiwuer"
-        minSdkVersion 15
-        targetSdkVersion 24
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
     }
 
     buildTypes {
