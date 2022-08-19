@@ -1,5 +1,7 @@
 申请软件著作权需要提交代码，但是要去掉注释，去注释读写文件代码在file_delete_comment
 
+添加了utils的module，里面有音效的操作
+
 
 ![](https://github.com/wanglei360/companyDemo/blob/master/gif/home.gif?raw=true)
 
